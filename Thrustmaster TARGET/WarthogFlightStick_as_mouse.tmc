@@ -1,0 +1,154 @@
+//**************************************************************************
+//        UNOFFICIAL MECHWARRIOR JOYSTICK SUPPORT
+//                      For the Thrustmaster T16000
+//
+//
+//                                Written by Loc Nar
+//       (http://mwomercs.com/forums/user/190978-loc-nar/)
+//
+//  MechWarrior Online Joystick -> Mouse/Keyboard override
+//
+//**************************************************************************
+ 
+ 
+include "target.tmh"
+int main()
+{
+        Configure(&HCougar, MODE_EXCLUDED);
+        //Configure(&Joystick, MODE_EXCLUDED);
+        Configure(&Throttle, MODE_EXCLUDED);
+        Configure(&LMFD, MODE_EXCLUDED);
+        Configure(&RMFD, MODE_EXCLUDED);
+        Configure(&T16000, MODE_EXCLUDED);
+  
+        if(Init(&EventHandle)) return 1;
+  
+        SetKBRate(32, 50);
+        SetKBLayout(KB_ENG);
+  
+////////////////////////////////////////
+//////MOVEMENT
+////////////////////////////////////////
+          
+        //JOY Y
+        MapAxis(&Joystick, JOYY, MOUSE_Y_AXIS, AXIS_REVERSED, MAP_ABSOLUTE);
+        SetSCurve(&Joystick, JOYY, 0, 5, 0, 7, -9);
+  
+        //JOY X
+        MapAxis(&Joystick, JOYX, MOUSE_X_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);
+        SetSCurve(&Joystick, JOYX, 0, 0, 0, 7, -8);
+  
+        //Turning  
+        //MapAxis(&T16000, RUDDER, AXIS_NORMAL, MAP_RELATIVE);
+        //SetSCurve(&T16000, RUDDER, 0, 10, 0, 0, 0);
+  
+        //Throttle
+        //MapAxis(&T16000, THR, DX_SLIDER_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);
+        //SetSCurve(&T16000, THR, 0, 10, 0, 0, 0);
+  
+        //Jump Jets/Center Torso
+        MapKey(&Joystick, B9, SPC);
+  
+////////////////////////////////////////
+//////STICK MAPPING
+////////////////////////////////////////  
+ 
+        //Firing Weapons
+        MapKey(&Joystick, TS1, '1'); //Fire Weapon 1
+        MapKey(&Joystick, H1L, '2'); //Fire Weapon 2
+        MapKey(&Joystick, H1U, '3'); //Fire Weapon 3
+        MapKey(&Joystick, H1R, '4'); //Fire Weapon 4
+        MapKey(&Joystick, H1D, '5'); //Fire Weapon 5
+        MapKey(&Joystick, TS2, '6'); //Fire Weapon 6
+        //MapKey(&T16000, TS1, '\'); //Alpha
+  
+  
+        //Targeting/Toggle ECM
+        MapKey(&Joystick, TS4, PULSE+'r');
+ 
+        //Display Team Info/Toggle Chainfire
+        MapKey(&Joystick, TS3, 'q');
+ 
+////////////////////////////////////////
+//////BASE MAPPING, Primary Functions
+////////////////////////////////////////
+  
+        //Freelook
+        MapKey(&Joystick, B9, L_CTL);
+  
+        //Heat Vision
+        MapKey(&Joystick, B10, PULSE+'h');
+        
+        //Night Vision
+        MapKey(&Joystick, B5, PULSE+'n');
+  
+        //Zoom/Advanced Zoom
+        MapKey(&Joystick, B6, PULSE+'z');
+  
+        //Jump Jets/Center Torso
+        MapKey(&Joystick, B7, SPC);
+  
+//////////////////////////////////
+//////Shift Layer Functions
+//////////////////////////////////
+  
+        SetShiftButton(&Joystick, B8, 0, 0, 0, 0);
+
+        //Firing Weapons
+//MapKeyIO(&T16000, TS1, USB[0x31], '1');    //Alpha Strike
+  
+        //Weapons List Navigation  
+//MapKeyIO(&T16000, H1L, PULSE+LARROW, '2');      //left arrow
+//MapKeyIO(&T16000, H1U, PULSE+UARROW, '3');      //up arrow
+//MapKeyIO(&T16000, H1R, PULSE+RARROW, '4');      //right arrow
+//MapKeyIO(&T16000, H1D, PULSE+DARROW, '5');      //down arrow
+//MapKeyIO(&T16000, TS2, PULSE+R_CTL, '6');        //select/deselect weapons
+ 
+        //Toggle ECM
+//MapKeyIO(&T16000, TS4, PULSE+'j', PULSE+'r');              //toggle ECM
+ 
+        //Toggle Chainfire
+//MapKeyIO(&T16000, TS3, PULSE+BSP, 'q'); //toggle chainfire
+ 
+        //Advanced Zoom
+//MapKeyIO(&T16000, B6, PULSE+'v', PULSE+'z');    //advanced zoom
+ 
+        //Center Torso
+//MapKeyIO(&T16000, B7, PULSE+'c', SPC);  //center torso
+ 
+        //Toggle Chainfire
+//MapKeyIO(&T16000, TS3, PULSE+BSP, 'q'); //toggle chainfire
+ 
+ 
+ 
+ 
+  
+/////////////////////////////////////////////////
+//////BASE MAPPING. Secondary functions
+/////////////////////////////////////////////////
+  
+        //Power
+        //MapKey(&T16000, B14, 'p');
+  
+        //Battlegrid
+        //MapKey(&T16000, B15, PULSE+'b');
+  
+        //Toggle Missile Doors
+        //MapKey(&T16000, B16, PULSE+'/');
+  
+        //Heat Shutdown Override
+        //MapKey(&T16000, B13, 'o');
+  
+        //Scoreboard
+        //MapKey(&T16000, B12, TAB);
+  
+        //Cockpit Light
+        //MapKey(&T16000, B11, PULSE+'.');
+
+printf("ALL SYSTEMS NOMINAL!");  
+ 
+}
+int EventHandle(int type, alias o, int x)
+{
+        DefaultMapping(&o, x);
+}

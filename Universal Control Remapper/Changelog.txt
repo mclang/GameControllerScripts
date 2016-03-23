@@ -1,0 +1,69 @@
+Key:
+! : Warning
+* : Comment
+= : Change / Fix
++ : Added feature
+
+0.0.7 - 13th Mar 2016
+! Warning! Settings version has changed.
+  BACK UP your INI file before using it with this version, if you value it.
++ Profiles are now organized in a Tree instead of a flat list.
++ Added a "Profile Toolbox" to allow navigation of the profile tree.
+  Add / Add Child / Delete / Rename of profiles are all functional.
+  Dragging and dropping of items in the Profile Tree to change parenting or order is supported.
++ Profile Switcher plugin now has a "picker" that can be used to choose a profile from the tree.
+  If you later change the structure of the tree, it will still point to the same profile.
+! Both the "Profile Toolbox" and the "Profile Picker" are experimental / placeholder.
+  The Profile Picker does not close unless you pick an item or close it.
+  Neither remember position or size.
+= Multiple AxisMerge plugins can now be used together.
+
+0.0.6 - 21st Feb 2016
+= Fixed errors while switching profile at the same time as input was happening.
+  The ProfileSwitcher plugin should no longer crash UCR.
+
+0.0.5 - 25th Jan 2016
+= On change of profile, all held buttons are released.
+= AxisToButton plugins now correctly manipulate the outputs.
+= Multiple AxisToButton plugins now work together.
+
+0.0.4 - 24th Jan 2016
++ Profile Switcher plugin added to allow changing profile using a hotkey.
+  This can be placed in the global profile to always be in effect.
++ Basic Joystick Axis to Button remapper plugin added.
++ Settings file is now written after one second's inactivity, rather than on every change.
++ Fix for Gui getting "Lost" when you minimized it.
+  If this happened to you, edit your INI file and reset the x and y coordinates at the top to 0.
++ vJoy API calls optimized.
+= State property added to Output GuiControls, to match input GuiControls.
+= AHK_H version updated
+= Objects which are used in multiple threads are shared via COM using new AHK_H function ObjShare().
+
+
+0.0.3 - 3rd Jan 2016
+! WARNING: The Mouse To Joystick plugin is DANGEROUS in this version.
+  Adding one can be tricky (You will have to use keyboard to manipulate the Output Axis Combos)...
+  ... But once you have added one, it will effectively break UCR - crashes all over the place :(
+  You will also not be able to remove the plugin via the GUI.
+= AHK_H version updated
+= Mouse Delta input now fires InputEvent like the other inputs
+= InputEvent callbacks are now "Critical Objects".
+  Input from the global profile at the same time as the active profile should no longer crash UCR.
+= Spamming button inputs quickly should no longer result in a "MaxHotkeysPerInterval" warning.
+= Fix for current profile being forgotten on exit.
+= Fix for multiple AxisToAxis plugins all using same output.
+
+0.0.2 - 31st Dec 2015
+= AHK_H version updated
++ Button To Axis remapper plugin added. Allows mapping of WSAD to vJoy
++ MouseDelta library added for reading of Delta Move information from mice.
++ Mouse to Joystick remapper plugin added for controlling a vJoy stick using mouse.
+= Fix for: Leak of memory on each input event (eg button down/up, axis move).
+= When in Bind Mode, only joystick buttons and hats that actually exist are polled.
+  This is better practice, and also seems to solve crashes on some systems.
+= Split plugins folder into Core and User folders.
+  This should allow easier upgrading if you have your own plugins.
+* If upgrading, it is advised that you back up your INI file and delete the old folder.
+
+0.0.1 - 25th Dec 2015
++ First versioned release

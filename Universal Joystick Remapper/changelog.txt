@@ -1,0 +1,188 @@
+UJR Changelog
+
+Key:
+! : Warning
+* : Comment
+= : Change / Fix
++ : Added feature
+
+6.10 - 2nd Nov 2015
++ Compiled with ADHD 3.3.4
+Reverted out change made in 6.9 - UJR would no longer run for many users
+
+6.9 - 8th Oct 2015
++ Compiled with ADHD 3.3.3
+As a result, you should no longer get a UAC prompt every time UJR starts. You should see it once, then it should not appear again.
+
+6.8 - 6th Oct 2015
+= Functionality Toggle binding now works. You can turn on/off UJR's functionality with this binding.
+
+6.7 - 16th July 2015
+= Greatest mode now works in a  more logical manner - it should now behave similarly to Merge mode.
+= CPU load reduced - GUI controls for axes that are not being used are no longer continually updated.
+
+6.6 - 24th Dec 2014
+! Now tries to use the vJoy DLLs from the vJoy installation folder.
+  PLEASE ENSURE YOU ARE USING THE LATEST VERSION OF VJOY!
++ Added in-app links to Github / Forum etc.
+= Fixed bad maths. UJR now correctly uses output values in the range 0->32768, not 0->32767
+  Shouldn't really affect much, such a small deviation was probably never noticed!
+= "Greatest" merge mode fix for pedals (Rests L/H axes) - thanks to CJBrew for this one!
+! For those that use the AHK version, the vjoy library is now a separate project:
+  https://github.com/evilC/AHK-vJoy-Library
+
+6.5 26th Aug 2014
++ Trim mode added to axis merging features - you can now use one axis to trim another axis.
+  Code contributed by PhoenixBvo, thanks!
+
+6.4 22nd May 2014
+= Updated to use latest version of ADHD
++ Bindings tab changed - no more Program Mode or ticking of Ctrl, Alt, Shift boxes.
+
+6.3 12th Dec 2013
+= Fixed missing 9-16 option for dropdowns to select stick ID for buttons, hats etc.
+
+6.2 12th Dec 2013
++ UJR now supports 16 physical joysticks (The max windows supports), instead of 8.
+
+6.1 10th Dec 2013
+= Fixed bug with axis merging.
+  Axis was being flipped in "Rests H" mode, also deadzone was applying wrong.
+  Sorry! I have no idea what I was smoking when I wrote that code!
+
+6.0 7th Dec 2013
+! Profiles from previous versions of UJR are not compatible with this version
+  Please delete or re-name uhr.ini
+! VJoy library was updated - be sure to copy the contents of VJoyLib folder over old copy!
+= Changed Axis Merging mechanism
+  Should be simpler to understand now
++ Axes and Buttons unavailable on the virtual stick are now disabled in UJR.
+  If your virtual stick only has 16 buttons, buttons 17-32 will be disabled in UJR.
++ Real-time detection of available axes / buttons.
+  If you alter the virtual stick config with UJR running, it will detect the changes and update accordingly.
++ Can now control different virtual sticks and swap virtual stick on the fly.
++ Can now run multiple copies of UJR simultaneously.
+  Each copy of UJR can control a different virtual stick.
++ Axis Splitting
+  Can now use half a physical axis to control a virtual axis
++ Improved Deadzone / Sensitivity support
+  Per-axis dz / sens support when doing axis merging
+  Rest High / Low mode for applying dz / sens to one end of an axis (For throttle / pedal like axes)
+= Fixed bug with Copying profiles (Exiting and reloading would not result in copied profile being the current one)
+
+5.4 30th Nov 2013
+= Modification to VJoy library - it can now correctly control virtual stick IDs other than 1.
+  No actual changes to UJR, but it would now be easy to make UJR control any virtual stick ID (Currently thru a code edit).
+  BE SURE TO COPY THE VJOYLIB FOLDER FROM THE ZIP INTO YOUR UJR FOLDER - THAT IS WHERE THE MAIN CHANGE IS!
+
+5.3 25th Nov 2013
+= Reduced likelihood of a merged axis "kicking" in one direction.
+  Previously, when building the virtual axis, the value of the first axis would be applied,
+  then the value of the second axis would be averaged in and the virtual axis would be set again.
+  This could result in jerky movement if there was too long between the two physical axes being processed.
+  The virtual axis is now only set when both physical axes have been read and added together.
+
+5.2 25th Nov 2013
+! Axis merging has changed!
+  It is now much less confusing to set up - configure each axis individually to move the slider in the direction desired.
+  eg set the left pedal to move the slider left (from a resting position all the way right), right pedal to move it right.
+  Then set both axes to the same virtual axis and enable merge - it should behave as expected.
++ Now detects if something else is controlling the virtual stick (maybe you tried to run ahk and exe versions of UJR?) and exits.
+
+5.1 21st Nov 2013
++ Added "QuickBind" function - bind game functions without leaving the game!
+  Instead of manually selecting an axis or button by using the QB radio button, you can use QuickSelect.
+  Bind QuickSelect to something, and when you hit it, press a button or move an axis.
+  The relevant axis or button will then be selected for you.
++ "Auto Configure" function - quickly set up a straight through mapping for all buttons or axes.
+
+5.0 20th Nov 2013
+* Rewrite using my ADHD library.
+! Now intended to be used when compiled to an EXE - You no longer need AutoHotkey installed.
+! Old profile files are NOT COMPATIBLE.
+  However, it is just the groups etc in the INI that will not work right.
+  If you create a new profile, exit UJR and paste in the contents of the old profile, it may well work.
+= Manual Control is gone, replaced by QuickBind
+= Profile support improved
+= Less tabs
+= Improved hat switch support (QuickBind supports hats, whereas Manual Control did not)
+= Detect Axis gone for now, it will probably return
+
+4.3
++ Basic Hat (POV) switch support.
+As AHK only supports one hat per stick, it is very basic for the moment.
+It currently only supports Continuous POVs.
+Currently there is no "manual control" mode for the hats
+
+4.2
+= Duplicate in profiles was always duplicating the Default profile, no matter what you had selected - fixed.
++ Added Delete Profile button
+
+4.1
++ Duplicate profile added.
+
+4.0
++ Profile support added.
+INI file format changed, there are now two INI files - one for misc settings, one for profiles
+Existing mappings are kept and moved to the default profile
+Manual profile switching only for now...
+
+3.2
++ The first physical POV Hat can now be mapped to virtual buttons. AHK only supports reading one POV :(
+
+3.1
++ Sensitivity option for each axis.
+
+3.0
+! Please note that the format of the config file has changed, the program will back your old one up
+= Fixed bug stopping button mappings not saving
+= Improved UI layout, labels etc
+= Major cleanup of code - now much more understandable
++ GUI position now saved in config file - when you close the app, next time you reopen it, it will be in the same place on your desktop
++ Only settings changed from their default setting are stored in the config file
++ Detect axis button! Use this to try and find out the stick ID of a physical stick.
+Instructions now simplified
++ Experimental - Merging of axes
+eg Merge two pedal axes into a rudder axis
+
+
+2.3
++ Much improved deadzone code
+  So with a 50% deadzone, if you move to 50 on an axis, it will be dead, but moving to 51 now outputs 1 rather than 51
++ Deadzone is now a text input field, so you can use any value you like
++ Input / Output slider renamed to "State"
++ Input and Output values for axes now displayed
++ Much more commented code
+
+2.2
++ Added per-axis deadzone settings. Just 5,10,20,30,40,50,60,70 or 80 percent at the moment but I intend to allow any figure in a future version
+
+2.1
+= Fixed bug stopping UJR from working on 64-bit AHK installs.
+= Fixed bug stopping mapping of virtual axis 4 or greater
++ 32 Buttons listed for physical joystick
+
+2.0
++ Now uses Axlar's vJoy library (http://www.autohotkey.com/board/topic/87690-using-ahk-to-control-vjoy)
++ Now uses vJoy 2.x - Support for up to 32 buttons
+You will NEED to uninstall vJoy 1.x and install 2.x to use this version
+
+1.1
+= Code for button testing no longer has one subroutine per button
+= Optimised technique for inverting axes - thanks Babba on AHK forums!
+
+1.0
+* Fully functional basic version!
+= Fixed bug stopping invert working in Manual Control mode
++ Button mapping in
+
+0.3
++ Settings now saved in an INI file
+
+0.2
++ All 8 axes now mappable
++ Code optimisations
+
+0.1
+* Initial Proof of concept
+
