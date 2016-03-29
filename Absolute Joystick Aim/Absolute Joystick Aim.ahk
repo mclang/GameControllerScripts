@@ -2,6 +2,7 @@
 ; https://autohotkey.com/docs/scripts/JoystickTest.htm
 ; https://autohotkey.com/docs/KeyList.htm
 ; https://autohotkey.com/docs/scripts/JoystickMouse.htm
+#NoEnv                   ; Recommended for performance and compatibility with future AutoHotkey releases.
 #SingleInstance force
 ; Configure these
 INPUT_AXISX := "1JoyX"   ; Joystick axis to turn left/right
