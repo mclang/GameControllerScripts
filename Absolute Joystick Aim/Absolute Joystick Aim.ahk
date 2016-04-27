@@ -23,21 +23,27 @@
 ; Add mouse button emulation:
 ; #include Mouse Button Mapping.ahk
 
+;
+; Configure following according to the joystick and required ingame movement range.
+; NOTE: With all [arrays], the first value is X (yaw) and the second is Y (pitch).
+;
+RANGE_CR := 44.8    ; Tested with above mouse settings that inside mechpit 2600 ~ 58° and 4000 ~ 89°
+TWIST_CR := 3.55    ; Tested with above mouse settings that max limit for 167°/s is around 45~50, thus using 3.55
 
-; Configure these according to the joystick and required ingame movement range.
-; With all [arrays], the first value is X (yaw) and the second is Y (pitch).
-RANGE_CR          := 44.8           ; Tested with above mouse settings that inside mechpit 2600 ~ 58° and 4000 ~ 89°
-;MOUSE_UNITS_RANGE := [2600, 1650]   ; The total range of movement, in mouse units. (2600 = ~1920px in windows)
-;MOUSE_UNITS_RANGE := [122*RANGE_CR, 50*RANGE_CR]    ; HGN-733p with perks and BASIC Twist X skill: 102° + 20°
-MOUSE_UNITS_RANGE := [100*RANGE_CR, 20*RANGE_CR]    ; HGN-733p with arm lock enabled
-;MOUSE_UNITS_RANGE := [125*RANGE_CR, 45*RANGE_CR]    ; FS9-SC
-MAX_TWIST_RATE := 47                ; The max twist rate, in mouse units (167°/s -> 45~50 -> ~3.55)
-MAX_TWIST_RATE := 20                ; Something like this when arms are locked...
+; The total range of movement, in mouse units. (2600 = ~1920px when in windows desktop)
+;MOUSE_UNITS_RANGE := [2600, 1650]
+
+;MOUSE_UNITS_RANGE := [125*RANGE_CR, 51*RANGE_CR]    ; HGN-733p with quirks and ELITE Twist X skill: 105+20°, 31+20°
+;MAX_TWIST_RATE    := 167/3.55                       ; The max twist rate of HGN, in mouse units (167°/s -> 45~50 -> ~3.55)
+MOUSE_UNITS_RANGE := [125*RANGE_CR, 45*RANGE_CR]    ; FS9-SC, no TwistX
+MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off.
+
 STICK_ID := 1                       ; The ID of the stick to take input from
 STICK_AXES := ["X", "Y"]            ; The axes on the stick to take input from
 
-
+;
 ; Internal variables that should not be changed unless you know what you are doing
+;
 MAX_JOYSTICK_RANGE    := 100
 JOYSTICK_OFFSET       := MAX_JOYSTICK_RANGE / 2
 JOYSTICK_MOUSE_RATIOS := [MOUSE_UNITS_RANGE[1] / MAX_JOYSTICK_RANGE, MOUSE_UNITS_RANGE[2] / MAX_JOYSTICK_RANGE]
@@ -46,6 +52,10 @@ AXIS_NAMES := [STICK_ID "Joy" STICK_AXES[1], STICK_ID "Joy" STICK_AXES[2]]
 ; Set true when 'toggle zoom' button is pressed
 zoomedin    := false
 zoom_origin := [0,0]
+
+; Start timer to monitor if 'tag' should be enabled using firing group 6
+;SetTimer, MonitorFireGroup6, 1000
+
 
 current_values := [0,0]
 Loop {
@@ -86,13 +96,15 @@ sgn(val) {
         return -1
 }
 
+
 ; Works ONLY on desktop and in mech bay, NOT inside game!
 ;1Joy5::
 ;    CoordMode, Mouse, Screen
 ;    mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
 ;    return
 
-; Reduce movement rate in zoom mode. Reset using 'z' key (bound in game also!)
+; Reduce movement rate in zoom mode.
+; NOTE: Same buttons MUST also be set in the game to toggle max zoom and reset zoom!
 1Joy15::
     zoomedin := !zoomedin
     if (zoomedin) {
@@ -100,6 +112,6 @@ sgn(val) {
         zoom_origin[2] := current_values[2]
     }
     return
-z::
+1Joy17::
     zoomedin := false
     return
