@@ -27,16 +27,20 @@
 ; Configure following according to the joystick and required ingame movement range.
 ; NOTE: With all [arrays], the first value is X (yaw) and the second is Y (pitch).
 ;
-RANGE_CR := 44.8    ; Tested with above mouse settings that inside mechpit 2600 ~ 58° and 4000 ~ 89°
-TWIST_CR := 3.55    ; Tested with above mouse settings that max limit for 167°/s is around 45~50, thus using 3.55
+RANGE_CR := 44.9    ; Tested with above mouse settings that inside mechpit 2600 ~ 58° and 4000 ~ 89°
+TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limit for 167°/s is around 45~50
 
 ; The total range of movement, in mouse units. (2600 = ~1920px when in windows desktop)
 ;MOUSE_UNITS_RANGE := [2600, 1650]
+;MAX_TWIST_RATE    := 999
 
 ;MOUSE_UNITS_RANGE := [125*RANGE_CR, 51*RANGE_CR]    ; HGN-733p with quirks and ELITE Twist X skill: 105+20°, 31+20°
 ;MAX_TWIST_RATE    := 167/3.55                       ; The max twist rate of HGN, in mouse units (167°/s -> 45~50 -> ~3.55)
 MOUSE_UNITS_RANGE := [125*RANGE_CR, 45*RANGE_CR]    ; FS9-SC, no TwistX
 MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off.
+
+; Set this if you want Y axis to have same range than X axis:
+MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
 
 STICK_ID := 1                       ; The ID of the stick to take input from
 STICK_AXES := ["X", "Y"]            ; The axes on the stick to take input from
@@ -51,7 +55,10 @@ AXIS_NAMES := [STICK_ID "Joy" STICK_AXES[1], STICK_ID "Joy" STICK_AXES[2]]
 
 ; Set true when 'toggle zoom' button is pressed
 zoomedin    := false
-zoom_origin := [0,0]
+zoom_origin := [0, 0]
+
+; This multiplier is used to lower 'DPI' while in zoom mode. For Highlander's range of 125°, a value of 0.5 was okay.
+zoom_mult   := [MOUSE_UNITS_RANGE[1] / RANGE_CR / 250, MOUSE_UNITS_RANGE[2] / RANGE_CR / 250]
 
 ; Start timer to monitor if 'tag' should be enabled using firing group 6
 ;SetTimer, MonitorFireGroup6, 1000
@@ -69,7 +76,7 @@ Loop {
         desired_value := (axis_in - JOYSTICK_OFFSET) * JOYSTICK_MOUSE_RATIOS[A_Index]
         ; Use reduced movement range when zoomed in
         if (zoomedin) {
-            desired_value := 0.5 * (desired_value + zoom_origin[A_Index])
+            desired_value := zoom_origin[A_Index] + zoom_mult[A_Index] * (desired_value - zoom_origin[A_Index])
         }
         ; Mouse positions MUST be integer values, otherwise strange things happen
         desired_value := round( desired_value )
