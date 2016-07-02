@@ -39,10 +39,10 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 MOUSE_UNITS_RANGE := [125*RANGE_CR, 45*RANGE_CR]    ; FS9-SC, no TwistX
 MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off.
 
-; Set this if you want Y axis to have same range than X axis:
+; Set this if you want Y axis to have the same __range__ than X axis:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
 
-STICK_ID := 1                       ; The ID of the stick to take input from
+STICK_ID   := 1                     ; The ID of the stick to take input from for mouse aim
 STICK_AXES := ["X", "Y"]            ; The axes on the stick to take input from
 
 ;
@@ -58,7 +58,12 @@ zoomedin    := false
 zoom_origin := [0, 0]
 
 ; This multiplier is used to lower 'DPI' while in zoom mode. For Highlander's range of 125°, a value of 0.5 was okay.
-zoom_mult   := [MOUSE_UNITS_RANGE[1] / RANGE_CR / 250, MOUSE_UNITS_RANGE[2] / RANGE_CR / 250]
+zoom_dpi_factors := [MOUSE_UNITS_RANGE[1] / RANGE_CR / 250, MOUSE_UNITS_RANGE[2] / RANGE_CR / 250]
+
+; Set true when 'reduce DPI' button is hold down
+reduce_dpi  := false
+rdpi_origin := [0, 0]
+
 
 ; Start timer to monitor if 'tag' should be enabled using firing group 6
 ;SetTimer, MonitorFireGroup6, 1000
@@ -75,8 +80,11 @@ Loop {
         ; Work out what mouse "coordinate" that stick position equates to
         desired_value := (axis_in - JOYSTICK_OFFSET) * JOYSTICK_MOUSE_RATIOS[A_Index]
         ; Use reduced movement range when zoomed in
-        if (zoomedin) {
-            desired_value := zoom_origin[A_Index] + zoom_mult[A_Index] * (desired_value - zoom_origin[A_Index])
+        if ( zoomedin ) {
+            desired_value := zoom_origin[A_Index] + zoom_dpi_factors[A_Index] * (desired_value - zoom_origin[A_Index])
+        }
+        if ( reduce_dpi ) {
+            desired_value := rdpi_origin[A_Index] + 0.5 * (desired_value - rdpi_origin[A_Index])
         }
         ; Mouse positions MUST be integer values, otherwise strange things happen
         desired_value := round( desired_value )
@@ -104,21 +112,40 @@ sgn(val) {
 }
 
 
-; Works ONLY on desktop and in mech bay, NOT inside game!
-;1Joy5::
-;    CoordMode, Mouse, Screen
-;    mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
-;    return
+; Use 'pinkie lever' to center cursor
+; - Works ONLY on desktop and inside mech bay, NOT while in game!
+1Joy4::
+    CoordMode, Mouse, Screen
+    mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
+    return
 
-; Reduce movement rate in zoom mode.
-; NOTE: Same buttons MUST also be set in the game to toggle max zoom and reset zoom!
-1Joy15::
+; Reduce movement range in zoom mode.
+; - Same button MUST also be set in the game to toggle max zoom and reset zoom!
+; - MWO sees joysticks and buttons zero based, thus what is here '1Joy17' is in MWO 'Joy 0 Button 26'!
+2Joy2::
     zoomedin := !zoomedin
     if (zoomedin) {
         zoom_origin[1] := current_values[1]
         zoom_origin[2] := current_values[2]
     }
     return
-1Joy17::
+
+2Joy8::
     zoomedin := false
+    return
+
+
+; Reduce movement range while button is pressed
+1Joy3::
+    reduce_dpi     := true
+    rdpi_origin[1] := current_values[1]
+    rdpi_origin[2] := current_values[2]
+    SetTimer, WaitForReduceRangeButton, 10
+    return
+
+WaitForReduceRangeButton:
+    if ( !GetKeyState( "1Joy3" ) ) {
+        SetTimer, WaitForReduceRangeButton, off
+        reduce_dpi := false
+    }
     return
