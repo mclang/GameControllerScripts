@@ -36,8 +36,10 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 
 ;MOUSE_UNITS_RANGE := [125*RANGE_CR, 51*RANGE_CR]    ; HGN-733p with quirks and ELITE Twist X skill: 105+20°, 31+20°
 ;MAX_TWIST_RATE    := 167/3.55                       ; The max twist rate of HGN, in mouse units (167°/s -> 45~50 -> ~3.55)
-MOUSE_UNITS_RANGE := [125*RANGE_CR, 45*RANGE_CR]    ; FS9-SC, no TwistX
-MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off.
+;MOUSE_UNITS_RANGE := [125*RANGE_CR, 45*RANGE_CR]    ; FS9-SC, no TwistX
+;MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off.
+MOUSE_UNITS_RANGE := [115*RANGE_CR, 60*RANGE_CR]    ; HBK-IIC
+MAX_TWIST_RATE    := 226/3.55                       ; HBK-IIC arm lock off
 
 ; Set this if you want Y axis to have the same __range__ than X axis:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
@@ -112,6 +114,23 @@ sgn(val) {
 }
 
 
+
+; Emulate mouse left button with joystick trigger
+1Joy1::
+    SetMouseDelay, -1            ; Makes movement smoother.
+    MouseClick, left,,, 1, 0, D  ; Hold down the left mouse button.
+    SetTimer, WaitForLeftButtonUp, 10
+    return
+
+WaitForLeftButtonUp:
+    if ( !GetKeyState( "1Joy1" ) ) {
+        SetTimer, WaitForLeftButtonUp, off
+        SetMouseDelay, -1  ; Makes movement smoother.
+        MouseClick, left,,, 1, 0, U  ; Release the mouse button.
+    }
+    return
+
+
 ; Use 'pinkie lever' to center cursor
 ; - Works ONLY on desktop and inside mech bay, NOT while in game!
 1Joy4::
@@ -119,10 +138,11 @@ sgn(val) {
     mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
     return
 
+
 ; Reduce movement range in zoom mode.
 ; - Same button MUST also be set in the game to toggle max zoom and reset zoom!
-; - MWO sees joysticks and buttons zero based, thus what is here '1Joy17' is in MWO 'Joy 0 Button 26'!
-2Joy2::
+; - MWO sees joysticks and buttons zero based, thus what is here '1Joy15' is in MWO 'Joy 0 Button 14'!
+1Joy15::
     zoomedin := !zoomedin
     if (zoomedin) {
         zoom_origin[1] := current_values[1]
@@ -130,13 +150,14 @@ sgn(val) {
     }
     return
 
-2Joy8::
+1Joy17::
     zoomedin := false
     return
 
 
 ; Reduce movement range while button is pressed
-1Joy3::
+; If button is changed, remember to modify 'WaitForReduceRAngeButton' also!
+2Joy9::
     reduce_dpi     := true
     rdpi_origin[1] := current_values[1]
     rdpi_origin[2] := current_values[2]
@@ -144,7 +165,7 @@ sgn(val) {
     return
 
 WaitForReduceRangeButton:
-    if ( !GetKeyState( "1Joy3" ) ) {
+    if ( !GetKeyState( "2Joy9" ) ) {
         SetTimer, WaitForReduceRangeButton, off
         reduce_dpi := false
     }
