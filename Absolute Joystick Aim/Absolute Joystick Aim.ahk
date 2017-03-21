@@ -1,4 +1,4 @@
-;
+﻿;
 ; Autohotkey script for using joystick as absolute aiming device, i.e a mouse.
 ; Mainly useful when playing games like Mechwarrior: Online where joystick is left as
 ; second class aiming device but joystick gives that fuzzy warm simulation feeling.
@@ -37,9 +37,11 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 ;MOUSE_UNITS_RANGE := [125*RANGE_CR, 51*RANGE_CR]    ; HGN-733p with quirks and ELITE Twist X skill: 105+20°, 31+20°
 ;MAX_TWIST_RATE    := 167/3.55                       ; The max twist rate of HGN, in mouse units (167°/s -> 45~50 -> ~3.55)
 ;MOUSE_UNITS_RANGE := [125*RANGE_CR, 45*RANGE_CR]    ; FS9-SC, no TwistX
-;MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off.
-MOUSE_UNITS_RANGE := [115*RANGE_CR, 60*RANGE_CR]    ; HBK-IIC
-MAX_TWIST_RATE    := 226/3.55                       ; HBK-IIC arm lock off
+;MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off
+;MOUSE_UNITS_RANGE := [135*RANGE_CR, 60*RANGE_CR]    ; HBK-IIC
+;MAX_TWIST_RATE    := 225/3.55                       ; HBK-IIC, arm lock off, STD250
+MOUSE_UNITS_RANGE := [135*RANGE_CR, 50*RANGE_CR]    ; Warhammer, arm lock off 
+MAX_TWIST_RATE    := 192/3.55                       ; Warhammer, arm lock off, XL300
 
 ; Set this if you want Y axis to have the same __range__ than X axis:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
@@ -141,8 +143,8 @@ WaitForLeftButtonUp:
 
 ; Reduce movement range in zoom mode.
 ; - Same button MUST also be set in the game to toggle max zoom and reset zoom!
-; - MWO sees joysticks and buttons zero based, thus what is here '1Joy15' is in MWO 'Joy 0 Button 14'!
-1Joy15::
+; - MWO sees joysticks and buttons ZERO based, thus what is here '1Joy15' is in MWO 'Joy 0 Button 14'!
+2Joy9::
     zoomedin := !zoomedin
     if (zoomedin) {
         zoom_origin[1] := current_values[1]
@@ -157,16 +159,16 @@ WaitForLeftButtonUp:
 
 ; Reduce movement range while button is pressed
 ; If button is changed, remember to modify 'WaitForReduceRAngeButton' also!
-2Joy9::
-    reduce_dpi     := true
-    rdpi_origin[1] := current_values[1]
-    rdpi_origin[2] := current_values[2]
-    SetTimer, WaitForReduceRangeButton, 10
-    return
+;2Joy9::
+;    reduce_dpi     := true
+;    rdpi_origin[1] := current_values[1]
+;    rdpi_origin[2] := current_values[2]
+;    SetTimer, WaitForReduceRangeButton, 10
+;    return
 
-WaitForReduceRangeButton:
-    if ( !GetKeyState( "2Joy9" ) ) {
-        SetTimer, WaitForReduceRangeButton, off
-        reduce_dpi := false
-    }
-    return
+;WaitForReduceRangeButton:
+;    if ( !GetKeyState( "2Joy9" ) ) {
+;        SetTimer, WaitForReduceRangeButton, off
+;        reduce_dpi := false
+;    }
+;    return
