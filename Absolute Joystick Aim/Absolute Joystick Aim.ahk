@@ -40,8 +40,8 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 ;MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off
 ;MOUSE_UNITS_RANGE := [135*RANGE_CR, 60*RANGE_CR]    ; HBK-IIC
 ;MAX_TWIST_RATE    := 225/3.55                       ; HBK-IIC, arm lock off, STD250
-MOUSE_UNITS_RANGE := [135*RANGE_CR, 50*RANGE_CR]    ; Warhammer, arm lock off 
-MAX_TWIST_RATE    := 192/3.55                       ; Warhammer, arm lock off, XL300
+MOUSE_UNITS_RANGE := [112*RANGE_CR, 26*RANGE_CR]    ; Warhammer, arms locked (only one weapon in arm)
+MAX_TWIST_RATES   := [92/TWIST_CR, 52/TWIST_CR]     ; Warhammer, XL/STD 325
 
 ; Set this if you want Y axis to have the same __range__ than X axis:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
@@ -97,7 +97,7 @@ Loop {
             ; Find out how much we want to move the mouse by
             delta_move[A_Index] := desired_value - current_values[A_Index]
             ; Limit the amount of movement for this tick to the MAX_TWIST_RATE
-            delta_move[A_Index] := abs(delta_move[A_Index]) > MAX_TWIST_RATE ? MAX_TWIST_RATE * sgn(delta_move[A_Index]) : delta_move[A_Index]
+            delta_move[A_Index] := abs(delta_move[A_Index]) > MAX_TWIST_RATES[A_Index] ? MAX_TWIST_RATES[A_Index] * sgn(delta_move[A_Index]) : delta_move[A_Index]
             ; Update current value
             current_values[A_Index] += delta_move[A_Index]
         }
@@ -140,9 +140,25 @@ WaitForLeftButtonUp:
     mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
     return
 
+; Use 'second' trigger, i.e button 6, to autofire weapon group 6 at specific interval
+; NOTE: Using 'SendInput' didn't work!
+;1Joy6::
+;    Send {6 down}{6 up}
+;    SetTimer, AutoFireWP6, 850
+;    SetTimer, WaitForStopAutoFire, 10
+;    return
+;AutoFireWP6:
+;    Send {6 down}{6 up}
+;    return
+;WaitForStopAutoFire:
+;    if ( !GetKeyState( "1Joy6" ) ) {
+;        SetTimer, AutoFireWP6, off
+;        SetTimer, WaitForStopAutoFire, off
+;    }
+;    return
 
 ; Reduce movement range in zoom mode.
-; - Same button MUST also be set in the game to toggle max zoom and reset zoom!
+; - Same button MUST also be set in the game to toggle max zoom (throttle R2/9) and reset zoom (warthog MMC/4)!
 ; - MWO sees joysticks and buttons ZERO based, thus what is here '1Joy15' is in MWO 'Joy 0 Button 14'!
 2Joy9::
     zoomedin := !zoomedin
@@ -152,13 +168,13 @@ WaitForLeftButtonUp:
     }
     return
 
-1Joy17::
+1Joy5::
     zoomedin := false
     return
 
 
 ; Reduce movement range while button is pressed
-; If button is changed, remember to modify 'WaitForReduceRAngeButton' also!
+; If button is changed, remember to modify 'WaitForReduceRangeButton' also!
 ;2Joy9::
 ;    reduce_dpi     := true
 ;    rdpi_origin[1] := current_values[1]
