@@ -40,8 +40,10 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 ;MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off
 ;MOUSE_UNITS_RANGE := [135*RANGE_CR, 60*RANGE_CR]    ; HBK-IIC
 ;MAX_TWIST_RATE    := 225/3.55                       ; HBK-IIC, arm lock off, STD250
-MOUSE_UNITS_RANGE := [112*RANGE_CR, 26*RANGE_CR]    ; Warhammer, arms locked (only one weapon in arm)
-MAX_TWIST_RATES   := [92/TWIST_CR, 52/TWIST_CR]     ; Warhammer, XL/STD 325
+MOUSE_UNITS_RANGE := [115.9*RANGE_CR, 26.2*RANGE_CR] ; Warhammer, _mastered_ but arms locked
+; MAX_TWIST_RATES   := [84/TWIST_CR, 47/TWIST_CR]     ; Warhammer, XL/STD 280, with _mastered_ 'Twist X' skill
+MAX_TWIST_RATES   := [90/TWIST_CR, 51/TWIST_CR]     ; Warhammer, XL/STD 300, with _mastered_ 'Twist X' skill
+; MAX_TWIST_RATES   := [94/TWIST_CR, 54/TWIST_CR]     ; Warhammer, XL/STD 325 (NOT UPDATED VALUES!)
 
 ; Set this if you want Y axis to have the same __range__ than X axis:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
