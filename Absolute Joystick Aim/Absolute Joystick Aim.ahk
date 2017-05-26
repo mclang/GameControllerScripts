@@ -31,6 +31,7 @@ RANGE_CR := 44.9    ; Tested with above mouse settings that inside mechpit 2600 
 TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limit for 167°/s is around 45~50
 
 ; The total range of movement, in mouse units. (2600 = ~1920px when in windows desktop)
+;                       yaw  pitch
 ;MOUSE_UNITS_RANGE := [2600, 1650]
 ;MAX_TWIST_RATE    := 999
 
@@ -40,10 +41,13 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 ;MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off
 ;MOUSE_UNITS_RANGE := [135*RANGE_CR, 60*RANGE_CR]    ; HBK-IIC
 ;MAX_TWIST_RATE    := 225/3.55                       ; HBK-IIC, arm lock off, STD250
-MOUSE_UNITS_RANGE := [115.5*RANGE_CR, 26.2*RANGE_CR] ; Warhammer, _mastered_ but arms locked
-; MAX_TWIST_RATES   := [84/TWIST_CR, 47/TWIST_CR]     ; Warhammer, XL/STD 280, with _mastered_ 'Twist X' skill
-; MAX_TWIST_RATES   := [90/TWIST_CR, 51/TWIST_CR]     ; Warhammer, XL/STD 300, with _mastered_ 'Twist X' skill
-MAX_TWIST_RATES   := [98/TWIST_CR, 55/TWIST_CR]     ; Warhammer, XL/STD 325, with _mastered_ 'Twist X' skill
+
+; Warhammer, arms locked, without skill nodes
+MOUSE_UNITS_RANGE := [110*RANGE_CR, 25*RANGE_CR]    
+MAX_TWIST_RATES   := [81/TWIST_CR, 51/TWIST_CR]
+; Warhammer, max speed tweak and: Pitch +10%, Yaw +6%, Speed +10.5%
+MOUSE_UNITS_RANGE := [116.6*RANGE_CR, 27.5*RANGE_CR]    
+MAX_TWIST_RATES   := [90/TWIST_CR, 51/TWIST_CR]
 
 ; Set this __if__ you want Y and X axes to have the same __range__:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
