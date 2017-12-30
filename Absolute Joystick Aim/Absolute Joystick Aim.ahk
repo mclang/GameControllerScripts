@@ -35,19 +35,12 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 ;MOUSE_UNITS_RANGE := [2600, 1650]
 ;MAX_TWIST_RATE    := 999
 
-;MOUSE_UNITS_RANGE := [125*RANGE_CR, 51*RANGE_CR]    ; HGN-733p with quirks and ELITE Twist X skill: 105+20°, 31+20°
-;MAX_TWIST_RATE    := 167/3.55                       ; The max twist rate of HGN, in mouse units (167°/s -> 45~50 -> ~3.55)
-;MOUSE_UNITS_RANGE := [125*RANGE_CR, 45*RANGE_CR]    ; FS9-SC, no TwistX
-;MAX_TWIST_RATE    := 379/3.55                       ; FS9-SC arm lock off
-;MOUSE_UNITS_RANGE := [135*RANGE_CR, 60*RANGE_CR]    ; HBK-IIC
-;MAX_TWIST_RATE    := 225/3.55                       ; HBK-IIC, arm lock off, STD250
-
 ; Warhammer, arms locked, without skill nodes
-MOUSE_UNITS_RANGE := [110*RANGE_CR, 25*RANGE_CR]    
+MOUSE_UNITS_RANGE := [110*RANGE_CR, 25*RANGE_CR]
 MAX_TWIST_RATES   := [81/TWIST_CR, 51/TWIST_CR]
-; Warhammer, max speed tweak and: Pitch +10%, Yaw +6%, Speed +10.5%
-MOUSE_UNITS_RANGE := [116.6*RANGE_CR, 27.5*RANGE_CR]    
-MAX_TWIST_RATES   := [90/TWIST_CR, 51/TWIST_CR]
+; Warhammer, with the usual acc/dec focused mobility skills:
+MOUSE_UNITS_RANGE := [110*RANGE_CR, 26*RANGE_CR]
+MAX_TWIST_RATES   := [81/TWIST_CR, 51/TWIST_CR]
 
 ; Set this __if__ you want Y and X axes to have the same __range__:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
@@ -141,6 +134,7 @@ WaitForLeftButtonUp:
 
 ; Use 'pinkie lever' to center cursor
 ; - Works ONLY on desktop and inside mech bay, NOT while in game!
+; - In game, joy0btn3 is 'toggle arm lock'
 1Joy4::
     CoordMode, Mouse, Screen
     mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
@@ -163,9 +157,8 @@ WaitForLeftButtonUp:
 ;    }
 ;    return
 
-; Reduce movement range in zoom mode.
-; - Same button MUST also be set in the game to toggle max zoom (throttle R2/9) and reset zoom (warthog MMC/4)!
-; - MWO sees joysticks and buttons ZERO based, thus what is here '1Joy15' is in MWO 'Joy 0 Button 14'!
+; Toggle zoomed state, i.e reduce movement rate, with Throttle R2/9 button.
+; - Same button __MUST__ also be set as 'toggle max zoom' inside the game!
 2Joy9::
     zoomedin := !zoomedin
     if (zoomedin) {
@@ -174,6 +167,8 @@ WaitForLeftButtonUp:
     }
     return
 
+; Reset zoomed state with Warthog button 5, Master Mode Control.
+; - Same button __MUST__ also be set as 'reset zoom' inside the game!
 1Joy5::
     zoomedin := false
     return
