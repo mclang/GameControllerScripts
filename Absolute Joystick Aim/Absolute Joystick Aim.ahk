@@ -35,12 +35,15 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 ;MOUSE_UNITS_RANGE := [2600, 1650]
 ;MAX_TWIST_RATE    := 999
 
+; TODO:
+; - use arm range and speed when arms lock is off
+
 ; Warhammer, arms locked, without skill nodes
 MOUSE_UNITS_RANGE := [110*RANGE_CR, 25*RANGE_CR]
 MAX_TWIST_RATES   := [81/TWIST_CR, 51/TWIST_CR]
-; Warhammer, with the usual acc/dec focused mobility skills:
-MOUSE_UNITS_RANGE := [110*RANGE_CR, 26*RANGE_CR]
-MAX_TWIST_RATES   := [81/TWIST_CR, 51/TWIST_CR]
+; Warhammer, arms locked, with the usual mobility skills:
+MOUSE_UNITS_RANGE := [116.6*RANGE_CR, 25*RANGE_CR]
+MAX_TWIST_RATES   := [89.5/TWIST_CR, 51/TWIST_CR]
 
 ; Set this __if__ you want Y and X axes to have the same __range__:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
@@ -168,9 +171,11 @@ WaitForLeftButtonUp:
     return
 
 ; Reset zoomed state with Warthog button 5, Master Mode Control.
-; - Same button __MUST__ also be set as 'reset zoom' inside the game!
+; - Same button __MUST__ also be set as 'center torso to legs' inside the game so that joystick gets recentered!
+; - Check that key '0' is set as 'reset zoom'
 1Joy5::
     zoomedin := false
+    Send {0 down}{0 up}
     return
 
 
