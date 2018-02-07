@@ -49,8 +49,13 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 ;MOUSE_UNITS_RANGE := [85*RANGE_CR, 20*RANGE_CR]
 ;MAX_TWIST_RATES   := [63/TWIST_CR, 39/TWIST_CR]
 ; Madcat MK II: The usual torso twist nodes
-MOUSE_UNITS_RANGE := [88.4*RANGE_CR, 20*RANGE_CR]
-MAX_TWIST_RATES   := [69.6/TWIST_CR, 39/TWIST_CR]
+;MOUSE_UNITS_RANGE := [88.4*RANGE_CR, 20*RANGE_CR]
+;MAX_TWIST_RATES   := [69.6/TWIST_CR, 39/TWIST_CR]
+
+; Huncback IIC: The usual torso twist nodes TOO QUICK I THINK?
+MOUSE_UNITS_RANGE := [120*RANGE_CR, 26*RANGE_CR]
+MAX_TWIST_RATES   := [94/TWIST_CR, 51/TWIST_CR]
+
 
 ; Set this __if__ you want Y and X axes to have the same __range__:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
