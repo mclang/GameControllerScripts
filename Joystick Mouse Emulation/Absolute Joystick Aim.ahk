@@ -1,10 +1,10 @@
 ﻿;
 ; Autohotkey script for using joystick as absolute aiming device, i.e a mouse.
 ; Mainly useful when playing games like Mechwarrior: Online where joystick is left as
-; second class aiming device but joystick gives that fuzzy warm simulation feeling.
+; second class aiming device but joystick still gives that fuzzy warm _simulation_ feeling.
 ;
 ; IMPORTANT!
-; The X/Y ratios used here are calibrated with following INGAME mouse settings:
+; The X/Y ratios used here are calibrated with following MWO INGAME mouse settings:
 ; - Sensitivity:  0.3
 ; - Smooth:       0.0
 ; - Acceleration: 0.0
@@ -54,36 +54,46 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 MOUSE_UNITS_RANGE := [125*RANGE_CR, 20*RANGE_CR]
 MAX_TWIST_RATES   := [112/TWIST_CR, 68/TWIST_CR]
 
+
 ; Set this __if__ you want Y and X axes to have the same __range__:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
 
 STICK_ID   := 1                     ; The ID of the stick to take input from for mouse aim
 STICK_AXES := ["X", "Y"]            ; The axes on the stick to take input from
+STICK_PREFIX  := STICK_ID "Joy"
+STICK_TRIGGER  := STICK_PREFIX "1"
+STICK_WRELEASE := STICK_PREFIX "2"   ; Weapon Release
+STICK_PLEVER   := STICK_PREFIX "4"   ; Pinkie Lever
+STICK_MMC      := STICK_PREFIX "5"   ; Master Mode Control
+
+THROTTLE_ID := 2                    ; The ID of the throttle
+THROTTLE_PREFIX := THROTTLE_ID "Joy"
+
+
+Hotkey, %STICK_TRIGGER%,     MouseButtonLeft
+Hotkey, %STICK_PLEVER%,      CenterMouseCursor  ; Works ONLY on desktop, NOT ingame (except in settings or when command wheel is up)
+Hotkey, %STICK_MMC%,         ResetZoomedState   ; Same button MUST be 'center torso to legs' AND '0' set as 'reset zoom'
+Hotkey, %THROTTLE_PREFIX% 3, CW_EnemySpotted    ; Check that key 'E' is set to show 'Command Wheel' (default)
+Hotkey, %THROTTLE_PREFIX% 6, ToggleZoomedState  ; Make sure same buttons is 'toggle max zoom' inside the game
+
 
 ;
-; Internal variables that should not be changed unless you know what you are doing
+; Internal variables that should NOT be changed unless you know what you are doing
 ;
 MAX_JOYSTICK_RANGE    := 100
 JOYSTICK_OFFSET       := MAX_JOYSTICK_RANGE / 2
 JOYSTICK_MOUSE_RATIOS := [MOUSE_UNITS_RANGE[1] / MAX_JOYSTICK_RANGE, MOUSE_UNITS_RANGE[2] / MAX_JOYSTICK_RANGE]
-AXIS_NAMES := [STICK_ID "Joy" STICK_AXES[1], STICK_ID "Joy" STICK_AXES[2]]
+AXIS_NAMES := [STICK_PREFIX STICK_AXES[1], STICK_PREFIX STICK_AXES[2]]
 
 ; Set true when 'toggle zoom' button (2Joy9) is pressed
 zoomedin    := false
 zoom_origin := [0, 0]
 
 ; This multiplier is used to lower 'DPI' while in zoom mode. For Highlander's range of 125°, a value of 0.5 was okay.
-zoom_dpi_factors := [MOUSE_UNITS_RANGE[1] / RANGE_CR / 250, MOUSE_UNITS_RANGE[2] / RANGE_CR / 250]
-
-; Set true when 'reduce DPI' button is hold down
-reduce_dpi  := false
-rdpi_origin := [0, 0]
+zoom_dpi_factors := [(MOUSE_UNITS_RANGE[1] / RANGE_CR / 250), (MOUSE_UNITS_RANGE[2] / RANGE_CR / 250)]
 
 
-; Start timer to monitor if 'tag' should be enabled using firing group 6
-;SetTimer, MonitorFireGroup6, 1000
-
-
+; Keep track of the current position so that we can skip updating when position does not change
 current_values := [0,0]
 Loop {
     ; Reset the move amount
@@ -91,18 +101,14 @@ Loop {
     ; Work out how much we want to move in X and Y
     Loop 2 {
         ; Get axis position in 0-100 float range.
-        axis_in := GetKeyState(AXIS_NAMES[A_Index])
+        axis_in := GetKeyState( AXIS_NAMES[A_Index] )
         ; Work out what mouse "coordinate" that stick position equates to
         desired_value := (axis_in - JOYSTICK_OFFSET) * JOYSTICK_MOUSE_RATIOS[A_Index]
         ; Use reduced movement range when zoomed in:
         if ( zoomedin ) {
             desired_value := zoom_origin[A_Index] + zoom_dpi_factors[A_Index] * (desired_value - zoom_origin[A_Index])
         }
-        ; Or when pressing a button:
-        ;if ( reduce_dpi ) {
-        ;    desired_value := rdpi_origin[A_Index] + 0.5 * (desired_value - rdpi_origin[A_Index])
-        ;}
-        ; Mouse positions MUST be integer values, otherwise strange things happen
+        ; Mouse positions MUST be integer values, otherwise STRANGE things happen
         desired_value := round( desired_value )
         ; Do we need to generate mouse input?
         if (desired_value != current_values[A_Index]) {
@@ -129,26 +135,26 @@ sgn(val) {
 
 
 
-; Emulate mouse left button with joystick trigger
-1Joy1::
-    SetMouseDelay, -1            ; Makes movement smoother.
-    MouseClick, left,,, 1, 0, D  ; Hold down the left mouse button.
+; Emulate mouse left button with drag-and-drop support
+MouseButtonLeft:
+    SetMouseDelay, -1               ; Makes movement smoother.
+    MouseClick, left,,, 1, 0, D     ; Hold down the left mouse button.
     SetTimer, WaitForLeftButtonUp, 10
     return
 
 WaitForLeftButtonUp:
-    if ( !GetKeyState( "1Joy1" ) ) {
-        SetTimer, WaitForLeftButtonUp, off
-        SetMouseDelay, -1  ; Makes movement smoother.
-        MouseClick, left,,, 1, 0, U  ; Release the mouse button.
-    }
+    if ( GetKeyState( STICK_PREFIX . MOUSE_LEFT ) )
+        return                      ; The button is still, down, so keep waiting.
+    SetTimer, WaitForLeftButtonUp, off
+    SetMouseDelay, -1               ; Makes movement smoother.
+    MouseClick, left,,, 1, 0, U     ; Release the mouse button.
     return
 
 
 ; Use 'pinkie lever' to center cursor
 ; - Works ONLY on desktop and inside mech bay, NOT while in game!
 ; - TODO: Use Throttle '2Joy11' to toggle between desktop and game mode?
-1Joy4::
+CenterMouseCursor:
     CoordMode, Mouse, Screen
     mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
     return
@@ -170,9 +176,8 @@ WaitForLeftButtonUp:
 ;    }
 ;    return
 
-; Toggle zoomed state, i.e reduce movement rate, with Throttle R2/9 button.
-; - Same button __MUST__ also be set as 'toggle max zoom' inside the game!
-2Joy9::
+; Toggle zoomed state, i.e reduce movement rate
+ToggleZoomedState:
     zoomedin := !zoomedin
     if (zoomedin) {
         zoom_origin[1] := current_values[1]
@@ -182,8 +187,8 @@ WaitForLeftButtonUp:
 
 ; Reset zoomed state with Warthog button 5, Master Mode Control.
 ; - Same button __MUST__ also be set as 'center torso to legs' inside the game so that joystick gets recentered!
-; - Check that key '0' is set as 'reset zoom'
-1Joy5::
+; - Check also that key '0' is set as 'reset zoom'
+ResetZoomedState:
     zoomedin := false
     Send {0 down}{0 up}
     return
@@ -205,10 +210,10 @@ WaitForLeftButtonUp:
 ;    }
 ;    return
 
-; Use T.Flight Throttle button 3 (switch backward) to do "Enemy Spotted"
+; Open 'Commans Wheel' and select 'Enemy Spotted'
 ; - The position of the right command wheel entry is tested with 1920x1200 resolution
 ; - Sleep needed so that command wheel menu has time to open before mouse moves
-2Joy3::
+CW_EnemySpotted:
     CoordMode, Mouse, Screen
     SendInput {E down}
     Sleep, 200
