@@ -147,7 +147,7 @@ WaitForLeftButtonUp:
 
 ; Use 'pinkie lever' to center cursor
 ; - Works ONLY on desktop and inside mech bay, NOT while in game!
-; - In game, joy0btn3 is 'toggle arm lock'
+; - TODO: Use Throttle '2Joy11' to toggle between desktop and game mode?
 1Joy4::
     CoordMode, Mouse, Screen
     mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
@@ -204,3 +204,14 @@ WaitForLeftButtonUp:
 ;        reduce_dpi := false
 ;    }
 ;    return
+
+; Use T.Flight Throttle button 3 (switch backward) to do "Enemy Spotted"
+; - The position of the right command wheel entry is tested with 1920x1200 resolution
+; - Sleep needed so that command wheel menu has time to open before mouse moves
+2Joy3::
+    CoordMode, Mouse, Screen
+    SendInput {E down}
+    Sleep, 200
+    mousemove, (1.2 * A_ScreenWidth / 2), (0.9 * A_ScreenHeight / 2)
+    SendInput {E up}
+    return
