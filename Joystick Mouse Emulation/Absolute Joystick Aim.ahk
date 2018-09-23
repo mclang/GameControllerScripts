@@ -58,15 +58,16 @@ MAX_TWIST_RATES   := [112/TWIST_CR, 68/TWIST_CR]
 ; Set this __if__ you want Y and X axes to have the same __range__:
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
 
-STICK_ID   := 1                     ; The ID of the stick to take input from for mouse aim
-STICK_AXES := ["X", "Y"]            ; The axes on the stick to take input from
-STICK_PREFIX  := STICK_ID "Joy"
-STICK_TRIGGER  := STICK_PREFIX "1"
-STICK_WRELEASE := STICK_PREFIX "2"   ; Weapon Release
-STICK_PLEVER   := STICK_PREFIX "4"   ; Pinkie Lever
-STICK_MMC      := STICK_PREFIX "5"   ; Master Mode Control
 
-THROTTLE_ID := 2                    ; The ID of the throttle
+STICK_ID   := 2                     ; The ID of the stick to take input from for mouse aim
+THROTTLE_ID := 1                    ; The ID of the throttle
+
+STICK_AXES   := ["X", "Y"]              ; The axes on the stick to take input from
+STICK_PREFIX := STICK_ID "Joy"
+STICK_TRIGGER   := STICK_PREFIX "1"
+STICK_WRELEASE  := STICK_PREFIX "2"     ; Weapon Release
+STICK_PLEVER    := STICK_PREFIX "4"     ; Pinkie Lever
+STICK_MMC       := STICK_PREFIX "5"     ; Master Mode Control
 THROTTLE_PREFIX := THROTTLE_ID "Joy"
 
 
@@ -143,7 +144,7 @@ MouseButtonLeft:
     return
 
 WaitForLeftButtonUp:
-    if ( GetKeyState( STICK_PREFIX . MOUSE_LEFT ) )
+    if ( GetKeyState( STICK_TRIGGER ) )
         return                      ; The button is still, down, so keep waiting.
     SetTimer, WaitForLeftButtonUp, off
     SetMouseDelay, -1               ; Makes movement smoother.
