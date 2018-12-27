@@ -40,7 +40,7 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 
 ; Warhammer, arms locked, with the usual mobility skills:
 ;MOUSE_UNITS_RANGE := [116.6*RANGE_CR, 25*RANGE_CR]
-;MAX_TWIST_RATES   := [89.5/TWIST_CR, 51/TWIST_CR]
+;MAX_TWIST_RATES   := [93/TWIST_CR, 51/TWIST_CR]
 
 ; Madcat MK II: The usual torso twist nodes
 ;MOUSE_UNITS_RANGE := [88.4*RANGE_CR, 20*RANGE_CR]
@@ -51,11 +51,14 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 ;MAX_TWIST_RATES   := [81/TWIST_CR, 51/TWIST_CR]
 
 ; Enforcer 'Ghillie' with right side mobility full speed tweak
-MOUSE_UNITS_RANGE := [125*RANGE_CR, 20*RANGE_CR]
-MAX_TWIST_RATES   := [112/TWIST_CR, 68/TWIST_CR]
+;MOUSE_UNITS_RANGE := [125*RANGE_CR, 20*RANGE_CR]
+;MAX_TWIST_RATES   := [112/TWIST_CR, 68/TWIST_CR]
 
+; Highlander Heavy metal - Baradul's LB10x, MRM40, 3xML, LFE325
+MOUSE_UNITS_RANGE := [90*RANGE_CR, 20*RANGE_CR]
+MAX_TWIST_RATES   := [90/TWIST_CR, 56/TWIST_CR]
 
-; Set this __if__ you want Y and X axes to have the same __range__:
+; Set this __if__ you want Y and X axes to have the same __range__ (you probably want this):
 MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
 
 
