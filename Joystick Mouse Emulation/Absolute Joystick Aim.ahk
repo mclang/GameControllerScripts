@@ -43,9 +43,14 @@ TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limi
 ;MOUSE_UNITS_RANGE := [116.6*RANGE_CR, 25*RANGE_CR]
 ;MAX_TWIST_RATES   := [93/TWIST_CR, 51/TWIST_CR]
 
-; Warhammer 9D(S), __without__ any mobility nodes
+; Warhammer 9D(S), __without__ any mobility nodes (arms free for ranges!)
 MOUSE_UNITS_RANGE := [110*RANGE_CR, (25+25)*RANGE_CR]
 MAX_TWIST_RATES   := [81/TWIST_CR, 51/TWIST_CR]
+
+; Warhammer IIC, with the usual accel/deccel/torso nodes (9!)
+MOUSE_UNITS_RANGE := [(75+30)*RANGE_CR, (20+30)*RANGE_CR]
+;MAX_TWIST_RATES   := [72/TWIST_CR, 45/TWIST_CR]
+MAX_TWIST_RATES   := [169/TWIST_CR, 169/TWIST_CR]
 
 ; Madcat MK II: The usual torso twist nodes
 ;MOUSE_UNITS_RANGE := [88.4*RANGE_CR, 20*RANGE_CR]
