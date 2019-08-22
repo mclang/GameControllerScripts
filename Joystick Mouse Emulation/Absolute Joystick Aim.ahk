@@ -3,14 +3,23 @@
 ; Mainly useful when playing games like Mechwarrior: Online where joystick is left as
 ; second class aiming device but joystick still gives that fuzzy warm _simulation_ feeling.
 ;
-; IMPORTANT!
-; The X/Y ratios used here are calibrated with following MWO INGAME mouse settings:
+; !!! IMPORTANT !!!
+;
+; The X/Y ratios used here were calibrated with specific mouse/windows/game settins!
+;
+; MWO **INGAME** mouse settings:
 ; - Sensitivity:  0.3
 ; - Smooth:       0.0
 ; - Acceleration: 0.0
+;
+; Mouse (Logitech G502) with static __on-board__ profile mode:
+; - Default DPI: 2000
+; - Switch DPI:  1000
+; - These SHOULDN'T matter though b/c they affect how the MOUSE reports movement
+;
 ; Also Windows Mouse Properties affect the calibrated ranges:
 ; - Acceleration, Precision, etc: off
-; - Pointer Speed: 40%
+; - Pointer Speed: 50%
 ;
 ; Useful Links:
 ; - https://autohotkey.com/docs/scripts/JoystickTest.htm
@@ -23,61 +32,71 @@
 ; Add mouse button emulation:
 ; #include Mouse Button Mapping.ahk
 
-;
-; Configure following according to the joystick and required ingame movement range.
-; NOTE: With all [arrays], the first value is X (yaw) and the second is Y (pitch).
-;
-RANGE_CR := 44.9    ; Tested with above mouse settings that inside mechpit 2600 ~ 58° and 4000 ~ 89°
-TWIST_CR := 3.53    ; Tested with above mouse settings that max twist speed limit for 167°/s is around 45~50
+; Mech torso twist range and speed configuration.
+; - Configure both the MECH_TWIST_RANGES and MECH_TWIST_RATES according to the ingame yaw/pitch values.
+; - Note value differences between running arms lockked versus arms free.
+; - Set USE_DESKTOP_RANGES if you want to use DESKTOP values instead of ingame MECH values
+; - Set SYNC_TWIST_RANGES if you want yaw/pitch ranges synched (you probably want this!)
+USE_DESKTOP_RANGES := true
+SYNC_TWIST_RANGES  := true
 
-; The total range of movement, in mouse units. (2600 = ~1920px when in windows desktop)
-;                       yaw  pitch
-;MOUSE_UNITS_RANGE := [2600, 1650]
-;MAX_TWIST_RATE    := 999
 
 ; TODO:
-; - use arm range and speed when arms lock is off
+; - use __arm__ range and speed when arm lock is off
 ; - unlock arms and use __full__ up/down pitch range, but slower torso speed?
 
 ; Warhammer, arms locked, with the usual mobility skills:
-;MOUSE_UNITS_RANGE := [116.6*RANGE_CR, 25*RANGE_CR]
-;MAX_TWIST_RATES   := [93/TWIST_CR, 51/TWIST_CR]
+;MECH_TWIST_RANGES := [116.6, 25]
+;MECH_TWIST_RATES  := [93, 51]
 
 ; Warhammer 9D(S), __without__ any mobility nodes (arms free for ranges!)
-MOUSE_UNITS_RANGE := [110*RANGE_CR, (25+25)*RANGE_CR]
-MAX_TWIST_RATES   := [81/TWIST_CR, 51/TWIST_CR]
+;MECH_TWIST_RANGES := [110, (25+25)]
+;MECH_TWIST_RATES  := [81, 51]
 
 ; Warhammer IIC, with the usual accel/deccel/torso nodes (9!)
-MOUSE_UNITS_RANGE := [(75+30)*RANGE_CR, (20+30)*RANGE_CR]
-;MAX_TWIST_RATES   := [72/TWIST_CR, 45/TWIST_CR]
-MAX_TWIST_RATES   := [169/TWIST_CR, 169/TWIST_CR]
+MECH_TWIST_RANGES := [(75+30), (20+30)]
+;MECH_TWIST_RATES  := [72, 45]
+MECH_TWIST_RATES  := [169, 169]
 
 ; Madcat MK II: The usual torso twist nodes
-;MOUSE_UNITS_RANGE := [88.4*RANGE_CR, 20*RANGE_CR]
-;MAX_TWIST_RATES   := [69.6/TWIST_CR, 39/TWIST_CR]
+;MECH_TWIST_RANGES := [88.4, 20]
+;MECH_TWIST_RATES  := [69.6, 39]
 
 ; Huncback IIC-B with right side mobility speed tweak
-;MOUSE_UNITS_RANGE := [115*RANGE_CR, 26*RANGE_CR]
-;MAX_TWIST_RATES   := [81/TWIST_CR, 51/TWIST_CR]
+;MECH_TWIST_RANGES := [115, 26]
+;MECH_TWIST_RATES  := [81, 51]
 
 ; Enforcer 'Ghillie' with right side mobility full speed tweak
-;MOUSE_UNITS_RANGE := [125*RANGE_CR, 20*RANGE_CR]
-;MAX_TWIST_RATES   := [112/TWIST_CR, 68/TWIST_CR]
+;MECH_TWIST_RANGES := [125, 20]
+;MECH_TWIST_RATES  := [112, 68]
 
 ; Highlander Heavy metal - Baradul's LB10x, MRM40, 3xML, LFE325
-;MOUSE_UNITS_RANGE := [90*RANGE_CR, 20*RANGE_CR]
-;MAX_TWIST_RATES   := [90/TWIST_CR, 56/TWIST_CR]
+;MECH_TWIST_RANGES := [90, 20]
+;MECH_TWIST_RATES  := [90, 56]
 
 ; IS Marauder, __without__ any mobility nodes
-;MOUSE_UNITS_RANGE := [85*RANGE_CR, (20+30)*RANGE_CR]
-;MAX_TWIST_RATES   := [90/TWIST_CR, 56/TWIST_CR]
+;MECH_TWIST_RANGES := [85, (20+30)]
+;MECH_TWIST_RATES  := [90, 56]
 
 
-; Set this __if__ you want Y and X axes to have the same __range__ (you probably want this):
-MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
+; Multipliers needed to convert ingame mech values into the script mouse values
+RANGE_CR := 44.9    ; Tested with above mouse settings that inside mechpit 1920 ~ 42° and 4000 ~ 89°
+TWIST_CR := 0.28    ; Tested with above mouse settings that max twist speed limit for 304°/s is around ~85
+
+if ( USE_DESKTOP_RANGES ) {
+    MOUSE_UNITS_RANGE := [1920, 1200]   ; Using these with pointer speed of 50% happens to be just right for desktop use :O
+    MAX_TWIST_RATES   := [999, 999]
+} else {
+    MOUSE_UNITS_RANGE := [MECH_TWIST_RANGES[1] * RANGE_CR, MECH_TWIST_RANGES[2] * RANGE_CR]
+    MAX_TWIST_RATES   := [MECH_TWIST_RATES[1]  * TWIST_CR, MECH_TWIST_RATES[2]  * TWIST_CR]
+}
+
+if ( SYNC_TWIST_RANGES ) {
+    MOUSE_UNITS_RANGE[2] := MOUSE_UNITS_RANGE[1]
+}
 
 
-STICK_ID   := 2                     ; The ID of the stick to take input from for mouse aim
+STICK_ID    := 2                    ; The ID of the stick to take input from for mouse aim
 THROTTLE_ID := 1                    ; The ID of the throttle
 
 STICK_AXES   := ["X", "Y"]              ; The axes on the stick to take input from
@@ -173,9 +192,11 @@ WaitForLeftButtonUp:
 ; Use 'pinkie lever' to center cursor
 ; - Works ONLY on desktop and inside mech bay, NOT while in game!
 ; - TODO: Use Throttle '2Joy11' to toggle between desktop and game mode?
+; - TODO: Combine with 'ResetZoomedState'?
 CenterMouseCursor:
     CoordMode, Mouse, Screen
     mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
+    ; Goto, ResetZoomedState
     return
 
 ; Use 'second' trigger, i.e button 6, to autofire weapon group 6 at specific interval
@@ -207,6 +228,7 @@ ToggleZoomedState:
 ; Reset zoomed state with Warthog button 5, Master Mode Control.
 ; - Same button __MUST__ also be set as 'center torso to legs' inside the game so that joystick gets recentered!
 ; - Check also that key '0' is set as 'reset zoom'
+; - TODO: Replace '0' with something that doesn't input anything (right shift!)
 ResetZoomedState:
     zoomedin := false
     Send {0 down}{0 up}
