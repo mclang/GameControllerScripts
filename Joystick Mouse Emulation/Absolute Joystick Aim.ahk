@@ -37,7 +37,7 @@
 ; - Note value differences between running arms lockked versus arms free.
 ; - Set USE_DESKTOP_RANGES if you want to use DESKTOP values instead of ingame MECH values
 ; - Set SYNC_TWIST_RANGES if you want yaw/pitch ranges synched (you probably want this!)
-USE_DESKTOP_RANGES := true
+USE_DESKTOP_RANGES := false
 SYNC_TWIST_RANGES  := true
 
 
@@ -101,16 +101,18 @@ THROTTLE_ID := 1                    ; The ID of the throttle
 
 STICK_AXES   := ["X", "Y"]              ; The axes on the stick to take input from
 STICK_PREFIX := STICK_ID "Joy"
-STICK_TRIGGER   := STICK_PREFIX "1"
+STICK_TRIGGER_1 := STICK_PREFIX "1"
 STICK_WRELEASE  := STICK_PREFIX "2"     ; Weapon Release
 STICK_PLEVER    := STICK_PREFIX "4"     ; Pinkie Lever
 STICK_MMC       := STICK_PREFIX "5"     ; Master Mode Control
+STICK_TRIGGER_2 := STICK_PREFIX "6"
 THROTTLE_PREFIX := THROTTLE_ID "Joy"
 
 
-Hotkey, %STICK_TRIGGER%,     MouseButtonLeft
-Hotkey, %STICK_PLEVER%,      CenterMouseCursor  ; Works ONLY on desktop, NOT ingame (except in settings or when command wheel is up)
-Hotkey, %STICK_MMC%,         ResetZoomedState   ; Same button MUST be 'center torso to legs' AND '0' set as 'reset zoom'
+Hotkey, %STICK_TRIGGER_1%,   MouseButtonLeft
+;Hotkey, %STICK_TRIGGER_2%,   AutofireWeaponGroup
+Hotkey, %STICK_PLEVER%,      ToggleMaxZoom      ; Hold pinkie lever to zoom
+Hotkey, %STICK_MMC%,         ResetZoomedState   ; Same button MUST be 'center torso to legs' AND 'RShift' set as 'reset zoom'
 Hotkey, %THROTTLE_PREFIX% 3, CW_EnemySpotted    ; Check that key 'E' is set to show 'Command Wheel' (default)
 Hotkey, %THROTTLE_PREFIX% 6, ToggleZoomedState  ; Make sure same buttons is 'toggle max zoom' inside the game
 
@@ -181,7 +183,7 @@ MouseButtonLeft:
     return
 
 WaitForLeftButtonUp:
-    if ( GetKeyState( STICK_TRIGGER ) )
+    if ( GetKeyState( STICK_TRIGGER_1 ) )
         return                      ; The button is still, down, so keep waiting.
     SetTimer, WaitForLeftButtonUp, off
     SetMouseDelay, -1               ; Makes movement smoother.
@@ -189,34 +191,24 @@ WaitForLeftButtonUp:
     return
 
 
-; Use 'pinkie lever' to center cursor
-; - Works ONLY on desktop and inside mech bay, NOT while in game!
-; - TODO: Use Throttle '2Joy11' to toggle between desktop and game mode?
-; - TODO: Combine with 'ResetZoomedState'?
-CenterMouseCursor:
-    CoordMode, Mouse, Screen
-    mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
-    ; Goto, ResetZoomedState
+; Click left mouse button every 850ms as long as STICK_TRIGGER_2 is down
+; NOTE: Left mouse button is just clicked using primary trigger, so do NOT click until 'AutoFireWG' fires!
+AutofireWeaponGroup:
+    SetTimer, AutoFireWG, 850
+    SetTimer, WaitForStopAutoFire, 10
+    return
+AutoFireWG:
+    MouseClick, left
+    return
+WaitForStopAutoFire:
+    if (  GetKeyState( STICK_TRIGGER_2 ) )
+        return
+    SetTimer, AutoFireWG, off
+    SetTimer, WaitForStopAutoFire, off
     return
 
-; Use 'second' trigger, i.e button 6, to autofire weapon group 6 at specific interval
-; NOTE: Using 'SendInput' didn't work!
-;1Joy6::
-;    Send {6 down}{6 up}
-;    SetTimer, AutoFireWP6, 850
-;    SetTimer, WaitForStopAutoFire, 10
-;    return
-;AutoFireWP6:
-;    Send {6 down}{6 up}
-;    return
-;WaitForStopAutoFire:
-;    if ( !GetKeyState( "1Joy6" ) ) {
-;        SetTimer, AutoFireWP6, off
-;        SetTimer, WaitForStopAutoFire, off
-;    }
-;    return
-
 ; Toggle zoomed state, i.e reduce movement rate
+; Make sure same buttons is 'toggle max zoom' inside the game
 ToggleZoomedState:
     zoomedin := !zoomedin
     if (zoomedin) {
@@ -225,13 +217,17 @@ ToggleZoomedState:
     }
     return
 
-; Reset zoomed state with Warthog button 5, Master Mode Control.
+ToggleMaxZoom:
+    return
+
+; Center cursor in desktop mode AND reset ingame zoomed state
 ; - Same button __MUST__ also be set as 'center torso to legs' inside the game so that joystick gets recentered!
-; - Check also that key '0' is set as 'reset zoom'
-; - TODO: Replace '0' with something that doesn't input anything (right shift!)
+; - Also 'RShift'  __MUST__ be set as ingame 'reset zoom' keybinding
 ResetZoomedState:
+    CoordMode, Mouse, Screen
+    mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
+    Send {RShift down}{RShift up}
     zoomedin := false
-    Send {0 down}{0 up}
     return
 
 
