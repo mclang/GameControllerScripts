@@ -1,0 +1,42 @@
+<Loadout MechID="807">
+ <Upgrades>
+  <Armor ItemID="2812"/>
+  <Structure ItemID="3101"/>
+  <Artemis Equipped="1"/>
+  <HeatSinks ItemID="3002"/>
+ </Upgrades>
+ <ActuatorState RightActuatorState="EActuatorState_HandsAndArms" LeftActuatorState="EActuatorState_HandsAndArms"/>
+ <ComponentList>
+  <component name="centre_torso" Armor="118">
+   <Module ItemID="3563"/>
+   <Module ItemID="3001"/>
+   <Module ItemID="3001"/>
+   <Module ItemID="3001"/>
+  </component>
+  <component name="right_torso" Armor="78">
+   <Weapon ItemID="1010"/>
+   <Weapon ItemID="1010"/>
+  </component>
+  <component name="left_torso" Armor="78"/>
+  <component name="left_arm" Armor="68">
+   <Weapon ItemID="1021"/>
+   <Module ItemID="2008"/>
+   <Module ItemID="2008"/>
+   <Module ItemID="2037"/>
+  </component>
+  <component name="right_arm" Armor="67">
+   <Weapon ItemID="1021"/>
+   <Module ItemID="2008"/>
+   <Module ItemID="2008"/>
+   <Module ItemID="2037"/>
+  </component>
+  <component name="left_leg" Armor="66"/>
+  <component name="right_leg" Armor="66"/>
+  <component name="head" Armor="17">
+   <Module ItemID="9023"/>
+  </component>
+  <component name="centre_torso_rear" Armor="6"/>
+  <component name="left_torso_rear" Armor="6"/>
+  <component name="right_torso_rear" Armor="6"/>
+ </ComponentList>
+</Loadout>
