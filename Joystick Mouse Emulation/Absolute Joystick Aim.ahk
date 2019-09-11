@@ -53,10 +53,9 @@ SYNC_TWIST_RANGES  := true
 ;MECH_TWIST_RANGES := [110, (25+25)]
 ;MECH_TWIST_RATES  := [81, 51]
 
-; Warhammer IIC, with the usual accel/deccel/torso nodes (9!)
-MECH_TWIST_RANGES := [(75+30), (20+30)]
-;MECH_TWIST_RATES  := [72, 45]
-MECH_TWIST_RATES  := [169, 169]
+; Warhammer IIC, with some accel/deccel/torso nodes
+;MECH_TWIST_RANGES := [(75+30), (20+30)]
+;MECH_TWIST_RATES  := [169, 169]
 
 ; Madcat MK II: The usual torso twist nodes
 ;MECH_TWIST_RANGES := [88.4, 20]
@@ -77,6 +76,14 @@ MECH_TWIST_RATES  := [169, 169]
 ; IS Marauder, __without__ any mobility nodes
 ;MECH_TWIST_RANGES := [85, (20+30)]
 ;MECH_TWIST_RATES  := [90, 56]
+
+; KGC-001 S without mobility nodes, but arms free
+;MECH_TWIST_RANGES := [100, (25+30)]
+;MECH_TWIST_RATES  := [146, 146]
+
+; Blood Asp BAS-A, Quad PPC setup
+MECH_TWIST_RANGES := [(80+20), (20+20)]
+MECH_TWIST_RATES  := [158, 158]
 
 
 ; Multipliers needed to convert ingame mech values into the script mouse values
@@ -107,15 +114,15 @@ STICK_PLEVER    := STICK_PREFIX "4"     ; Pinkie Lever
 STICK_MMC       := STICK_PREFIX "5"     ; Master Mode Control
 STICK_TRIGGER_2 := STICK_PREFIX "6"
 THROTTLE_PREFIX := THROTTLE_ID "Joy"
+THROTTLE_11     := THROTTLE_PREFIX "11" ; The rightmost toggle switch on the throttle base
 
 
-Hotkey, %STICK_TRIGGER_1%,   MouseButtonLeft
-;Hotkey, %STICK_TRIGGER_2%,   AutofireWeaponGroup
-Hotkey, %STICK_PLEVER%,      ToggleMaxZoom      ; Hold pinkie lever to zoom
-Hotkey, %STICK_MMC%,         ResetZoomedState   ; Same button MUST be 'center torso to legs' AND 'RShift' set as 'reset zoom'
-Hotkey, %THROTTLE_PREFIX% 3, CW_EnemySpotted    ; Check that key 'E' is set to show 'Command Wheel' (default)
-Hotkey, %THROTTLE_PREFIX% 6, ToggleZoomedState  ; Make sure same buttons is 'toggle max zoom' inside the game
-
+Hotkey, %STICK_TRIGGER_1%,      MouseButtonLeft
+Hotkey, %STICK_PLEVER%,         ToggleMaxZoom       ; Hold pinkie lever to zoom
+Hotkey, %STICK_MMC%,            RecenterViewState   ; Same button MUST be 'center torso to legs' AND 'RShift' set as 'reset zoom'
+Hotkey, %THROTTLE_PREFIX% 3,    CW_EnemySpotted     ; Check that key 'E' is set to show 'Command Wheel' (default)
+Hotkey, %THROTTLE_PREFIX% 6,    ToggleZoomedState   ; Make sure same buttons is 'toggle max zoom' inside the game
+Hotkey, %THROTTLE_11%,          ToggleDakka
 
 ;
 ; Internal variables that should NOT be changed unless you know what you are doing
@@ -175,7 +182,11 @@ sgn(val) {
 
 
 
-; Emulate mouse left button with drag-and-drop support
+; either:
+; - emulate normal mouse left button with drag-and-drop support
+; or
+; - click left mouse button continuously until released
+do_the_dakka := false
 MouseButtonLeft:
     SetMouseDelay, -1               ; Makes movement smoother.
     MouseClick, left,,, 1, 0, D     ; Hold down the left mouse button.
@@ -191,21 +202,19 @@ WaitForLeftButtonUp:
     return
 
 
-; Click left mouse button every 850ms as long as STICK_TRIGGER_2 is down
-; NOTE: Left mouse button is just clicked using primary trigger, so do NOT click until 'AutoFireWG' fires!
-AutofireWeaponGroup:
-    SetTimer, AutoFireWG, 850
-    SetTimer, WaitForStopAutoFire, 10
-    return
-AutoFireWG:
-    MouseClick, left
-    return
-WaitForStopAutoFire:
-    if (  GetKeyState( STICK_TRIGGER_2 ) )
-        return
-    SetTimer, AutoFireWG, off
-    SetTimer, WaitForStopAutoFire, off
-    return
+;AutofireWeaponGroup:
+;    SetTimer, AutoFireWG, 850
+;    SetTimer, WaitForStopAutoFire, 10
+;    return
+;AutoFireWG:
+;    MouseClick, left
+;    return
+;WaitForStopAutoFire:
+;    if (  GetKeyState( STICK_TRIGGER ) )
+;        return
+;    SetTimer, AutoFireWG, off
+;    SetTimer, WaitForStopAutoFire, off
+;    return
 
 ; Toggle zoomed state, i.e reduce movement rate
 ; Make sure same buttons is 'toggle max zoom' inside the game
@@ -217,13 +226,30 @@ ToggleZoomedState:
     }
     return
 
+; Toggle whether 'MouseButtonLeft' does:
+; - click and hold (i.e normal mouse)
+; - click and click and click... until released
+ToggleDakka:
+    do_the_dakka := true
+    ; MsgBox Dakka enabled
+    SetTimer, WaitForStopDakka, 1000
+    return
+WaitForStopDakka:
+    if (  GetKeyState( THROTTLE_11 ) )
+        return
+    do_the_dakka := false
+    ; MsgBox Dakka disabled
+    SetTimer, WaitForStopDakka, off
+    return
+
+
 ToggleMaxZoom:
     return
 
 ; Center cursor in desktop mode AND reset ingame zoomed state
 ; - Same button __MUST__ also be set as 'center torso to legs' inside the game so that joystick gets recentered!
 ; - Also 'RShift'  __MUST__ be set as ingame 'reset zoom' keybinding
-ResetZoomedState:
+RecenterViewState:
     CoordMode, Mouse, Screen
     mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
     Send {RShift down}{RShift up}
