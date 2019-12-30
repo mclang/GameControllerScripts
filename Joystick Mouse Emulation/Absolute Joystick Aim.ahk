@@ -82,8 +82,16 @@ SYNC_TWIST_RANGES  := true
 ;MECH_TWIST_RATES  := [146, 146]
 
 ; Blood Asp BAS-A, Quad PPC setup
-MECH_TWIST_RANGES := [(80+20), (20+20)]
-MECH_TWIST_RATES  := [158, 158]
+;MECH_TWIST_RANGES := [(80+20), (20+20)]
+;MECH_TWIST_RATES  := [158, 158]
+
+; Bushwacker High Roller, Dual RAC/5
+;MECH_TWIST_RANGES := [(110+35), (30+30)]
+;MECH_TWIST_RATES  := [236, 236]
+
+; Cyclops 'Sleipnir'
+MECH_TWIST_RANGES := [(80+20), (20+30)]
+MECH_TWIST_RATES  := [225, 225]
 
 
 ; Multipliers needed to convert ingame mech values into the script mouse values
