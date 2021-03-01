@@ -111,8 +111,8 @@ if ( SYNC_TWIST_RANGES ) {
 }
 
 
-STICK_ID    := 2                    ; The ID of the stick to take input from for mouse aim
-THROTTLE_ID := 1                    ; The ID of the throttle
+STICK_ID    := 1                    ; The ID of the stick to take input from for mouse aim
+THROTTLE_ID := 2                    ; The ID of the throttle
 
 STICK_AXES   := ["X", "Y"]              ; The axes on the stick to take input from
 STICK_PREFIX := STICK_ID "Joy"
