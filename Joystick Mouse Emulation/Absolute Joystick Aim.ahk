@@ -5,21 +5,34 @@
 ;
 ; !!! IMPORTANT !!!
 ;
-; The X/Y ratios used here were calibrated with specific mouse/windows/game settins!
+; The X/Y ratios used here were calibrated with specific mouse/windows/game settings
+; and screen resolution of 1920x1200. Calibrate `RANGE_CR` and `TWIST_CR` multipliers
+; again if the screen size changes.
 ;
 ; MWO **INGAME** mouse settings:
 ; - Sensitivity:  0.3
 ; - Smooth:       0.0
 ; - Acceleration: 0.0
 ;
+; WINDOWS mouse properties:
+; - Acceleration, Precision, etc: off
+; - Cursor/Pointer Speed: 50%
+;
 ; Mouse (Logitech G502) with static __on-board__ profile mode:
 ; - Default DPI: 2000
 ; - Switch DPI:  1000
-; - These SHOULDN'T matter though b/c they affect how the MOUSE reports movement
+; - These SHOULDN'T matter though b/c they affect how the mouse REPORTS its movement, not how it moves
 ;
-; Also Windows Mouse Properties affect the calibrated ranges:
-; - Acceleration, Precision, etc: off
-; - Pointer Speed: 50%
+; INGAME Settings (27.03.2021)
+; - Screen resolution: 2560x1440 fullscreen
+; - Joystick:
+;   * Remove Torso twist and turn b/c handled by this mouse AHK emulation
+;   * Remove mouse left button from WG1 b/c handled by joystick trigger
+; - Throttle:
+;   * Analog throttle & turn
+;   * Invert Throttle: ON
+;   * Throttle range:  FULL
+;   * Throttle decay:  OFF
 ;
 ; Useful Links:
 ; - https://autohotkey.com/docs/scripts/JoystickTest.htm
@@ -86,12 +99,12 @@ SYNC_TWIST_RANGES  := true
 ;MECH_TWIST_RATES  := [158, 158]
 
 ; Bushwacker High Roller, Dual RAC/5
-;MECH_TWIST_RANGES := [(110+35), (30+30)]
-;MECH_TWIST_RATES  := [236, 236]
+MECH_TWIST_RANGES := [(110+35), (30+30)]
+MECH_TWIST_RATES  := [236, 236]
 
 ; Cyclops 'Sleipnir'
-MECH_TWIST_RANGES := [(80+20), (20+30)]
-MECH_TWIST_RATES  := [225, 225]
+;MECH_TWIST_RANGES := [(80+20), (20+30)]
+;MECH_TWIST_RATES  := [225, 225]
 
 
 ; Multipliers needed to convert ingame mech values into the script mouse values
@@ -118,19 +131,22 @@ STICK_AXES   := ["X", "Y"]              ; The axes on the stick to take input fr
 STICK_PREFIX := STICK_ID "Joy"
 STICK_TRIGGER_1 := STICK_PREFIX "1"
 STICK_WRELEASE  := STICK_PREFIX "2"     ; Weapon Release
+STICK_NSTEERING := STICK_PREFIX "3"     ; Nose Steering
 STICK_PLEVER    := STICK_PREFIX "4"     ; Pinkie Lever
 STICK_MMC       := STICK_PREFIX "5"     ; Master Mode Control
 STICK_TRIGGER_2 := STICK_PREFIX "6"
 THROTTLE_PREFIX := THROTTLE_ID "Joy"
-THROTTLE_11     := THROTTLE_PREFIX "11" ; The rightmost toggle switch on the throttle base
+THROTTLE_09     := THROTTLE_PREFIX "9"  ; Throttle base LEFTMOST switch
+THROTTLE_SE     := THROTTLE_PREFIX "10" ; Throttle base LEFT on/off switch
+THROTTLE_ST     := THROTTLE_PREFIX "11" ; Throttle base RIGHT on/off switch
+THROTTLE_HOME   := THROTTLE_PREFIX "12" ; Throttle base RED button
 
 
 Hotkey, %STICK_TRIGGER_1%,      MouseButtonLeft
-Hotkey, %STICK_PLEVER%,         ToggleMaxZoom       ; Hold pinkie lever to zoom
 Hotkey, %STICK_MMC%,            RecenterViewState   ; Same button MUST be 'center torso to legs' AND 'RShift' set as 'reset zoom'
 Hotkey, %THROTTLE_PREFIX% 3,    CW_EnemySpotted     ; Check that key 'E' is set to show 'Command Wheel' (default)
-Hotkey, %THROTTLE_PREFIX% 6,    ToggleZoomedState   ; Make sure same buttons is 'toggle max zoom' inside the game
-Hotkey, %THROTTLE_11%,          ToggleDakka
+Hotkey, %THROTTLE_PREFIX% 6,    ToggleZoomedState   ; Make SURE same buttons is 'toggle max zoom' inside the game
+Hotkey, %THROTTLE_ST%,          ToggleDakka
 
 ;
 ; Internal variables that should NOT be changed unless you know what you are doing
@@ -140,7 +156,7 @@ JOYSTICK_OFFSET       := MAX_JOYSTICK_RANGE / 2
 JOYSTICK_MOUSE_RATIOS := [MOUSE_UNITS_RANGE[1] / MAX_JOYSTICK_RANGE, MOUSE_UNITS_RANGE[2] / MAX_JOYSTICK_RANGE]
 AXIS_NAMES := [STICK_PREFIX STICK_AXES[1], STICK_PREFIX STICK_AXES[2]]
 
-; Set true when 'toggle zoom' button (2Joy9) is pressed
+; Set true when 'toggle max zoom' button (check `ToggleZoomedState` above) is pressed
 zoomedin    := false
 zoom_origin := [0, 0]
 
@@ -190,10 +206,11 @@ sgn(val) {
 
 
 
-; either:
-; - emulate normal mouse left button with drag-and-drop support
+; Either:
+; - Emulate normal mouse left button with drag-and-drop support
 ; or
-; - click left mouse button continuously until released
+; - Click left mouse button continuously until released (WIP!)
+; - Could maybe be done directly using `GetKeyState( THROTTLE_ST )`?
 do_the_dakka := false
 MouseButtonLeft:
     SetMouseDelay, -1               ; Makes movement smoother.
@@ -224,6 +241,24 @@ WaitForLeftButtonUp:
 ;    SetTimer, WaitForStopAutoFire, off
 ;    return
 
+
+; Toggle whether 'MouseButtonLeft' does:
+; - click and hold (i.e normal mouse)
+; - click and click and click... until released (WIP!)
+ToggleDakka:
+    do_the_dakka := true
+    ; MsgBox Dakka enabled
+    SetTimer, WaitForStopDakka, 1000
+    return
+WaitForStopDakka:
+    if (  GetKeyState( THROTTLE_ST ) )
+        return
+    do_the_dakka := false
+    ; MsgBox Dakka disabled
+    SetTimer, WaitForStopDakka, off
+    return
+
+
 ; Toggle zoomed state, i.e reduce movement rate
 ; Make sure same buttons is 'toggle max zoom' inside the game
 ToggleZoomedState:
@@ -234,29 +269,9 @@ ToggleZoomedState:
     }
     return
 
-; Toggle whether 'MouseButtonLeft' does:
-; - click and hold (i.e normal mouse)
-; - click and click and click... until released
-ToggleDakka:
-    do_the_dakka := true
-    ; MsgBox Dakka enabled
-    SetTimer, WaitForStopDakka, 1000
-    return
-WaitForStopDakka:
-    if (  GetKeyState( THROTTLE_11 ) )
-        return
-    do_the_dakka := false
-    ; MsgBox Dakka disabled
-    SetTimer, WaitForStopDakka, off
-    return
-
-
-ToggleMaxZoom:
-    return
-
 ; Center cursor in desktop mode AND reset ingame zoomed state
 ; - Same button __MUST__ also be set as 'center torso to legs' inside the game so that joystick gets recentered!
-; - Also 'RShift'  __MUST__ be set as ingame 'reset zoom' keybinding
+; - Also 'Right Shift'  __MUST__ be set as ingame 'reset zoom' keybinding (keyboard section)
 RecenterViewState:
     CoordMode, Mouse, Screen
     mousemove, (A_ScreenWidth / 2), (A_ScreenHeight / 2)
@@ -281,8 +296,10 @@ RecenterViewState:
 ;    }
 ;    return
 
-; Open 'Commans Wheel' and select 'Enemy Spotted'
-; - The position of the right command wheel entry is tested with 1920x1200 resolution
+
+; Open 'Command Wheel' and select 'Enemy Spotted'
+; - Check that key 'E' is set to show 'Command Wheel' (default)
+; - The position of the right command wheel entry is tested with 1920x1200 and 2560x1440 resolutions (fullscreen!)
 ; - Sleep needed so that command wheel menu has time to open before mouse moves
 CW_EnemySpotted:
     CoordMode, Mouse, Screen
